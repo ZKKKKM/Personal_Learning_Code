@@ -35,6 +35,38 @@ const debouncefrequency = 10;
 // GPIO_TypeDef* 代表的是寄存器的首地址，
 uint8_t debounce(GPIO_TypeDef* GPIOx, uint16_t GPIO_PIN)
 {
+  // 初始化状态 定义 当前状态以及上一秒的状态
+  uint8_t state;
+  uint8_t state_last;
+  //读上一步的状态
+  state_last = HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx, GPIO_PIN);
+  
+  // 去抖动核心逻辑
+  for (int counter = 0; count< deboouncefrequency; count++)
+  {
+    HAL_Delay(1); //延时一秒
+    state = HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx,GPIO_PIN); //读取目前的状态
+    
+    // 如果目前的状态不等于上一次状态，说明还在抖动状态
+    // 那么就要重新清零计数器，并且更新上一次的状态
+    if (state != state_last) 
+    {
+      counter = 0;
+      state_last = state;
+    }
+
+  }
+
+  // 最后到达了消除抖动的阶段，所以目前的状态是稳定的，也就可以正常输出
+  if(state == 0)
+  {
+    return 1; // state 等于0 说明摁下，也就是表示True 按下  
+  }
+  else
+  {
+    return 0; //其他情况设置成0
+  }
+
 
 }
 
